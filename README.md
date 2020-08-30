@@ -9,12 +9,12 @@ Analyis was performed using Python and Pandas (Jupyter Notebook).<br/>
 
 Step 1:
 1. Climate Analysis and Expoloration
-1. Preciption Analyis
+1. Preciption Analysis
 
 ![](precip.png)
 ![](precip_desc.png)
 
-1. Station Analysis
+3. Station Analysis
 
 ![](TOBS.png)
 
