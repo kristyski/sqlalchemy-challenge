@@ -1,5 +1,7 @@
 import numpy as np
 
+import datetime as dt
+
 import sqlalchemy
 from sqlalchemy.ext.automap import automap_base #to pull in the tables from the sqllite db
 from sqlalchemy.orm import Session
@@ -14,7 +16,7 @@ engine = create_engine("sqlite:///Resources/hawaii.sqlite")
 
 # reflect an existing database into a new model
 Base = automap_base()
-# reflect the tables; use inspector, here, you should be very familiar with data in database
+# reflect the tables; use inspector here, be very familiar with data in database
 Base.prepare(engine, reflect=True)
 
 # Save reference to the tables
@@ -38,7 +40,7 @@ def home():
         )
 
 #################################################
-# Return a JSON list of stations from the dataset.
+# Return a JSON list of stations from the dataset
 @app.route("/api/v1.0/station")
 def stations():
     # Create our session (link) from Python to the DB
@@ -48,7 +50,7 @@ def stations():
     # Query all stations
     results = session.query(Stations.station).all() #to get the station name column
 
-    session.close() # good housekeeping to close session (just at end?)
+    session.close() # good housekeeping to close session
     # Convert list of tuples into normal list
     all_stations = list(np.ravel(results))
 
@@ -65,7 +67,9 @@ def precipitation():
 
     """Return a list of all measurements"""
     # Query all precip
-    results = session.query(Measurements.date, Measurements.prcp).all() #to get the station name column
+    results = session.query(Measurements.date, Measurements.prcp).\
+        filter(Measurements.date >= '2016-08-23').\
+        all() #to get the station name column
     print (results[0])
    
     precip = {date: prcp for date, prcp in results}
@@ -88,7 +92,7 @@ def tobs():
         filter(Measurements.date>='2016-08-23').\
         filter(Measurements.station == 'USC00519281').all()
 
-    session.close() # good housekeeping to close session or add end only??
+    session.close() # good housekeeping to close session
     print(results)
 
 # Convert list of tuples into normal list
@@ -105,29 +109,26 @@ def tobs():
 
 @app.route("/api/v1.0/<start>")
 @app.route("/api/v1.0/<start>/<end>")
-def stats(start=None, end=None):
+def stats(start):
+# def stats(start=None, end=None):
+
+#   Query min, avg, max temp for a start & end range
     session = Session(engine)
-
-    # Query min, avg, max temp for a start & end range
-    # use Select statement
-    sel = [func.min(Measurements.tobs), func.avg(Measurements.tobs), func.max(Measurements.tobs)]
-    results = session.query(*sel).filter(Measurements.date >= start).all()
     
-    # if start > "2016-08-23", results
-    #     else
+    start_date= dt.datetime.strptime(start, '%Y-%m-%d')
+    last_year = dt.timedelta(days=365)
+    start = start_date-last_year
+    end =  dt.date(2017, 8, 23)
 
-    session.close() # good housekeeping to close session
-    print(results)
+    sel = [func.min(Measurements.tobs), func.avg(Measurements.tobs), func.max(Measurements.tobs)]
+    results = session.query(*sel).filter(Measurements.date >= start).filter(Measurements.date <= end).all()
 
-# # Convert list of tuples into normal list
     stats = list(np.ravel(results))
-
-# # * Return a JSON list of stations from the dataset.
+    
     return jsonify(stats=stats)
+
+    session.close()
 
 if __name__ == "__main__":
     # Create your app.run statement here
     app.run(debug=True)
-
-## Hints
-# * You will need to join the station and measurement tables for some of the queries.
