@@ -14,8 +14,8 @@ engine = create_engine("sqlite:///../Resources/hawaii.sqlite")
 
 # reflect an existing database into a new model
 Base = automap_base()
-# reflect the tables
-Base.prepare(engine, reflect=True) #use inspector, here, you should be very familiar with data in database
+# reflect the tables; use inspector, here, you should be very familiar with data in database
+Base.prepare(engine, reflect=True)
 
 # Save reference to the tables
 Measurements = Base.classes.measurement #assuming know there is this table
@@ -31,7 +31,7 @@ def home():
     """List all available api routes."""
     return (
         f"Available Routes:<br/>"
-        f"<a href='/api/v1.0/measurement'>measurement</a>"
+        f"<a href='/api/v1.0/measurement'>measurement</a><br/>"
         f"<a href='/api/v1.0/station'>station</a>"
     )
 
@@ -42,24 +42,46 @@ def stations():
 
     """Return a list of all station names"""
     # Query all stations
-    results = session.query(stations.station).all() #to get the name column
+    results = session.query(stations.station).all() #to get the station name column
 
     session.close() # good housekeeping to close session
-    # print(results)
+    print(results)
     # Convert list of tuples into normal list
     all_stations = list(np.ravel(results))
 
+# * Return a JSON list of stations from the dataset.
     return jsonify(all_stations)
 
+if __name__ == "__main__":
+    # Create your app.run statement here
+    app.run(debug=True)
 
-# @app.route("/api/v1.0/precipitation")
-# def precipitation():
-#     return jsonify(precip)
-
-
+### STILL TO DO
+# NEW APP.ROUTE?
 # * Convert the query results to a dictionary using `date` as the key and `prcp` as the value.
 # * Return the JSON representation of your dictionary.
-# * Return a JSON list of stations from the dataset.
+
+# @app.route("/api/v1.0/measurements")
+# def measurements():
+#     # Create our session (link) from Python to the DB
+#     session = Session(engine)
+
+#     """Return a list of all station names"""
+#     # Query all temps
+#     results = session.query(measurements.station).all() #to get all data?
+#     session.close() # good housekeeping to close session
+
+#     all_results = []
+#     for temp in results:
+#         temps = {}
+#         temps["date"] = item[1]
+#         temps["prcp"] = float(item[2])
+#         all_results.append(temps)
+
+#     return jsonify(all_results)
+
+
+
 # * Query the dates and temperature observations of the most active station for the last year of data.
 # * Return a JSON list of temperature observations (TOBS) for the previous year.
 # *`/api/v1.0/<start>` and `/api/v1.0/<start>/<end>`
@@ -69,20 +91,3 @@ def stations():
 # ## Hints
 # * You will need to join the station and measurement tables for some of the queries.
 # * Use Flask `jsonify` to convert your API data into a valid JSON response object.
-
-# #not quite working yet, did it not work because above was not quite done?
-# @app.route("/api/v1.0/justice-league/<name>")
-# def justice_league_name(name):
-#     """Return the name of super hero"""
-#     for x in justice_league_members:
-#         if x['superhero'] == name:
-#             superhero = x
-#             print(superhero)
-#     return (superhero)
-
-#she entered /api/v1.0/justice-league/Flash and it returned Flash's real name
-
-if __name__ == "__main__":
-    # Create your app.run statement here
-        app.run(debug=True)
-
