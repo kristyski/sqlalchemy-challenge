@@ -1,7 +1,7 @@
-##Kristy Anderson
-##August 30, 2020
-##Data Analytics
-##SQLAlchemy-Challenge Homework
+##Kristy Anderson<br/>
+##August 30, 2020<br/>
+##Data Analytics<br/>
+##SQLAlchemy-Challenge Homework<br/>
 
 
 We were tasked to use SQLAlchemy and Flask API to explore and analyze climate data from a hawaii.sqlite database.<br/>
