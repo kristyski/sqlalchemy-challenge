@@ -16,11 +16,11 @@ engine = create_engine("sqlite:///Resources/hawaii.sqlite")
 
 # reflect an existing database into a new model
 Base = automap_base()
-# reflect the tables; use inspector here, be very familiar with data in database
+# reflect the tables
 Base.prepare(engine, reflect=True)
 
 # Save reference to the tables
-Measurements = Base.classes.measurement #assuming know there is this table
+Measurements = Base.classes.measurement
 Stations = Base.classes.station
 
 # Initialize Flask app
@@ -50,7 +50,7 @@ def stations():
     # Query all stations
     results = session.query(Stations.station).all() #to get the station name column
 
-    session.close() # good housekeeping to close session
+    session.close()
     # Convert list of tuples into normal list
     all_stations = list(np.ravel(results))
 
@@ -68,15 +68,14 @@ def precipitation():
     """Return a list of all measurements"""
     # Query all precip
     results = session.query(Measurements.date, Measurements.prcp).\
-        filter(Measurements.date >= '2016-08-23').\
-        all() #to get the station name column
+        filter(Measurements.date >= '2016-08-23').all()
     print (results[0])
    
     precip = {date: prcp for date, prcp in results}
 
     return jsonify(precip)
 
-    session.close() # good housekeeping to close session
+    session.close()
 
 #################################################
 # * Query the dates and temperature observations of the most active station for the last year of data.
@@ -92,7 +91,7 @@ def tobs():
         filter(Measurements.date>='2016-08-23').\
         filter(Measurements.station == 'USC00519281').all()
 
-    session.close() # good housekeeping to close session
+    session.close()
     print(results)
 
 # Convert list of tuples into normal list
@@ -105,7 +104,6 @@ def tobs():
 # * Return a JSON list of the minimum temperature, the average temperature, and the max temperature for a given start or start-end range.
 # * When given the start only, calculate `TMIN`, `TAVG`, and `TMAX` for all dates greater than and equal to the start date.
 # * When given the start and the end date, calculate the `TMIN`, `TAVG`, and `TMAX` for dates between the start and end date inclusive.
-#Austin: So in the URL the user is going to have to type in a date in the %Y-%m-%d format like so: http://127.0.0.1:5000/api/v1.0/2017-03-04 and it'll grab the min, avg, max
 
 @app.route("/api/v1.0/<start>")
 @app.route("/api/v1.0/<start>/<end>")
